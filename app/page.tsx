@@ -253,19 +253,19 @@ export default function Home() {
             name="name"
             required
             placeholder="Your name"
-            className="sm:col-span-2 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
+            className="sm:col-span-2 bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
           <input
             name="contact"
             required
             placeholder="Phone or email"
-            className="sm:col-span-2 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
+            className="sm:col-span-2 bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
           <select
             name="service"
             required
             defaultValue=""
-            className="sm:col-span-2 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
+            className="sm:col-span-2 bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           >
             <option value="" disabled>
               Select a service
@@ -286,19 +286,19 @@ export default function Home() {
             type="date"
             name="date"
             required
-            className="border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
+            className="bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
           <input
             type="time"
             name="time"
             required
-            className="border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
+            className="bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
           <textarea
             name="notes"
             placeholder="Anything else we should know? (optional)"
             rows={3}
-            className="sm:col-span-2 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
+            className="sm:col-span-2 bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
 
           <button
