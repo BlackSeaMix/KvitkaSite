@@ -68,9 +68,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-cream text-zinc-900">
+    <div className="min-h-screen bg-ink text-cream">
       {/* Nav */}
-      <header className="sticky top-0 z-50 bg-cream/90 backdrop-blur border-b border-black/10">
+      <header className="sticky top-0 z-50 bg-ink/90 backdrop-blur border-b border-cream/10">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <a href="#" className="flex items-center gap-2 font-semibold text-lg tracking-tight">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -78,9 +78,9 @@ export default function Home() {
             {SHOP_NAME}
           </a>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-700">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-cream/70">
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-zinc-900 transition-colors">
+              <a key={link.href} href={link.href} className="hover:text-cream transition-colors">
                 {link.label}
               </a>
             ))}
@@ -88,7 +88,7 @@ export default function Home() {
 
           <a
             href={PHONE_TEL}
-            className="hidden md:inline-flex items-center gap-2 bg-brandYellow text-ink text-sm font-semibold px-4 py-2 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+            className="hidden md:inline-flex items-center gap-2 bg-brandYellow text-ink text-sm font-semibold px-4 py-2 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
           >
             <Phone className="h-4 w-4" />
             {PHONE_DISPLAY}
@@ -96,7 +96,7 @@ export default function Home() {
 
           <button
             onClick={() => setMenuOpen((open) => !open)}
-            className="md:hidden p-2 -mr-2 rounded-full text-ink hover:bg-black/5 active:bg-black/10 transition-colors"
+            className="md:hidden p-2 -mr-2 rounded-full text-brandYellow hover:bg-cream/10 active:bg-cream/20 transition-colors"
             aria-label="Toggle menu"
           >
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -104,18 +104,18 @@ export default function Home() {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden border-t border-black/10 px-6 py-4 flex flex-col gap-4 text-sm font-medium text-zinc-700">
+          <div className="md:hidden border-t border-cream/10 px-6 py-4 flex flex-col gap-4 text-sm font-medium text-cream/70">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="hover:text-zinc-900 transition-colors"
+                className="hover:text-cream transition-colors"
               >
                 {link.label}
               </a>
             ))}
-            <a href={PHONE_TEL} className="flex items-center gap-2 text-zinc-900 font-semibold">
+            <a href={PHONE_TEL} className="flex items-center gap-2 text-cream font-semibold">
               <Phone className="h-4 w-4" />
               {PHONE_DISPLAY}
             </a>
@@ -125,7 +125,7 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-cream" />
+        <div className="absolute inset-0 bg-ink" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/hero-painting.webp"
@@ -134,25 +134,25 @@ export default function Home() {
         />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 md:py-36 text-center">
-          <p className="text-ink font-semibold tracking-wide uppercase text-sm mb-4">
+          <p className="text-brandYellow font-semibold tracking-wide uppercase text-sm mb-4">
             {HERO_EYEBROW}
           </p>
-          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-zinc-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-cream mb-6">
             {TAGLINE}
           </h1>
-          <p className="text-lg text-zinc-700 max-w-xl mx-auto mb-10">
+          <p className="text-lg text-cream/80 max-w-xl mx-auto mb-10">
             {HERO_DESCRIPTION}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="#booking"
-              className="inline-flex items-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+              className="inline-flex items-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
               Book Now
             </a>
             <a
               href="#services"
-              className="inline-flex items-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+              className="inline-flex items-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
               View Services
             </a>
@@ -161,10 +161,10 @@ export default function Home() {
       </section>
 
       {/* Services */}
-      <section id="services" className="max-w-6xl mx-auto px-6 py-20 border-t border-black/10">
+      <section id="services" className="max-w-6xl mx-auto px-6 py-20 border-t border-cream/10">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-semibold tracking-tight mb-3">Services & Pricing</h2>
-          <p className="text-zinc-700">Simple, transparent pricing. No surprises.</p>
+          <p className="text-cream/80">Simple, transparent pricing. No surprises.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {SERVICE_CATEGORIES.map((group) => (
@@ -191,10 +191,10 @@ export default function Home() {
       </section>
 
       {/* Gallery */}
-      <section id="gallery" className="max-w-6xl mx-auto px-6 py-20 border-t border-black/10">
+      <section id="gallery" className="max-w-6xl mx-auto px-6 py-20 border-t border-cream/10">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-semibold tracking-tight mb-3">Gallery</h2>
-          <p className="text-zinc-700">A look at the work.</p>
+          <p className="text-cream/80">A look at the work.</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {GALLERY_ITEMS.map((item, i) =>
@@ -225,7 +225,7 @@ export default function Home() {
 
       {/* Reviews */}
       {REVIEWS.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 py-20 border-t border-black/10">
+        <section className="max-w-6xl mx-auto px-6 py-20 border-t border-cream/10">
           <div className="flex flex-col md:flex-row gap-8 justify-center text-center md:text-left">
             {REVIEWS.map((review) => (
               <div key={review.quote} className="flex-1 max-w-sm mx-auto md:mx-0">
@@ -234,8 +234,8 @@ export default function Home() {
                     <Star key={i} className="h-4 w-4 fill-brandYellow text-brandYellow" />
                   ))}
                 </div>
-                <p className="text-zinc-700 mb-2">&ldquo;{review.quote}&rdquo;</p>
-                <p className="text-sm text-zinc-600">{review.name}</p>
+                <p className="text-cream/80 mb-2">&ldquo;{review.quote}&rdquo;</p>
+                <p className="text-sm text-cream/60">{review.name}</p>
               </div>
             ))}
           </div>
@@ -243,10 +243,10 @@ export default function Home() {
       )}
 
       {/* Booking */}
-      <section id="booking" className="max-w-6xl mx-auto px-6 py-20 border-t border-black/10">
+      <section id="booking" className="max-w-6xl mx-auto px-6 py-20 border-t border-cream/10">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-semibold tracking-tight mb-3">Book an Appointment</h2>
-          <p className="text-zinc-700">Pick a service and a time that works for you.</p>
+          <p className="text-cream/80">Pick a service and a time that works for you.</p>
         </div>
         <form onSubmit={handleBookingSubmit} className="max-w-xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input
@@ -304,7 +304,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={bookingStatus === "submitting"}
-            className="sm:col-span-2 inline-flex items-center justify-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-cream disabled:translate-y-0 disabled:opacity-50 disabled:shadow-none"
+            className="sm:col-span-2 inline-flex items-center justify-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:translate-y-0 disabled:opacity-50 disabled:shadow-none"
           >
             {bookingStatus === "submitting" ? "Sending…" : "Request Booking"}
           </button>
@@ -318,25 +318,25 @@ export default function Home() {
             <p className="sm:col-span-2 text-sm text-red-600">{bookingError}</p>
           )}
 
-          <p className="sm:col-span-2 text-xs text-zinc-600 text-center">
+          <p className="sm:col-span-2 text-xs text-cream/60 text-center">
             {BOOKING_DEPOSIT_NOTE}
           </p>
         </form>
       </section>
 
       {/* Hours & Location */}
-      <section id="hours" className="max-w-6xl mx-auto px-6 py-20 border-t border-black/10">
+      <section id="hours" className="max-w-6xl mx-auto px-6 py-20 border-t border-cream/10">
         <div className="grid md:grid-cols-2 gap-12">
           <div>
             <h2 className="text-3xl font-semibold tracking-tight mb-6 flex items-center gap-3">
-              <Clock className="h-6 w-6 text-ink" />
+              <Clock className="h-6 w-6 text-brandYellow" />
               Opening Hours
             </h2>
-            <ul className="divide-y divide-black/10">
+            <ul className="divide-y divide-cream/10">
               {HOURS.map((h) => (
                 <li key={h.day} className="flex justify-between py-3 text-sm">
-                  <span className="text-zinc-700">{h.day}</span>
-                  <span className="font-medium text-zinc-900">{h.time}</span>
+                  <span className="text-cream/80">{h.day}</span>
+                  <span className="font-medium text-cream">{h.time}</span>
                 </li>
               ))}
             </ul>
@@ -344,7 +344,7 @@ export default function Home() {
 
           <div id="contact">
             <h2 className="text-3xl font-semibold tracking-tight mb-6 flex items-center gap-3">
-              <MapPin className="h-6 w-6 text-ink" />
+              <MapPin className="h-6 w-6 text-brandYellow" />
               Find Us
             </h2>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -353,7 +353,7 @@ export default function Home() {
               alt="Kvitka Centrum storefront"
               className="rounded-2xl mb-4 w-full aspect-video object-cover"
             />
-            <div className="rounded-2xl overflow-hidden border border-black/15 mb-4 aspect-video">
+            <div className="rounded-2xl overflow-hidden border border-cream/15 mb-4 aspect-video">
               <iframe
                 title="Shop location map"
                 className="w-full h-full"
@@ -362,10 +362,10 @@ export default function Home() {
                 src={`https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`}
               />
             </div>
-            <p className="text-zinc-700 mb-4">{ADDRESS}</p>
+            <p className="text-cream/80 mb-4">{ADDRESS}</p>
             <a
               href={PHONE_TEL}
-              className="inline-flex items-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+              className="inline-flex items-center gap-2 bg-brandYellow text-ink font-semibold px-6 py-3 rounded-lg shadow-sm shadow-black/20 hover:brightness-95 hover:shadow-md hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
               <Phone className="h-4 w-4" />
               {PHONE_DISPLAY}
@@ -375,9 +375,9 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-black/10">
-        <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-zinc-600">
-          <div className="flex items-center gap-2 font-medium text-zinc-900">
+      <footer className="border-t border-cream/10">
+        <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-cream/60">
+          <div className="flex items-center gap-2 font-medium text-cream">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/flower-mark.png" alt="" className="h-6 w-6 shrink-0" />
             {SHOP_NAME}

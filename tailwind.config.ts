@@ -9,10 +9,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#7CCFF2",
+        primary: "#F3E1D8",
         cream: "#F7F3EA",
-        brandYellow: "#FFF917",
-        ink: "#0E006D",
+        brandYellow: "#E8A87C",
+        ink: "#121212",
       },
     },
   },
