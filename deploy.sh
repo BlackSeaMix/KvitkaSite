@@ -16,6 +16,23 @@ if ! grep -qw "$CURRENT_BRANCH" <<< "$ALLOWED_BRANCHES"; then
   exit 1
 fi
 
+# Being on the right branch name isn't enough — a stale local checkout of
+# develop/main (not pulled recently) would otherwise silently deploy old
+# code while still passing the check above. This has actually happened
+# (see CLAUDE.md, 2026-11-11 entry) — require the local branch to exactly
+# match origin before proceeding.
+echo "== Checking '$CURRENT_BRANCH' is up to date with origin =="
+git fetch origin "$CURRENT_BRANCH" --quiet
+LOCAL_HEAD=$(git rev-parse HEAD)
+REMOTE_HEAD=$(git rev-parse "origin/$CURRENT_BRANCH")
+if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
+  echo "✗ Local '$CURRENT_BRANCH' doesn't match origin/$CURRENT_BRANCH — refusing to deploy."
+  echo "  Local:  $LOCAL_HEAD"
+  echo "  Origin: $REMOTE_HEAD"
+  echo "  Pull first: git pull origin $CURRENT_BRANCH"
+  exit 1
+fi
+
 echo "== Building locally first =="
 npm run build
 
