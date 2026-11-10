@@ -21,6 +21,18 @@ The "Book Now" section posts to `app/api/book/route.ts`, which creates an event 
 
 Without these set, the form still works but bookings are only logged server-side (no calendar event created), and the visitor sees a "call us instead" message.
 
+### Availability and conflict checking
+
+`/api/availability?date=YYYY-MM-DD` generates candidate slots from `BOOKING_HOURS_BY_DAY`/`BOOKING_SLOT_MINUTES`/`BOOKING_DURATION_MINUTES` (all in `app/content.ts`) and checks each against the calendar's `freeBusy` data, so the booking form's time dropdown shows already-booked slots as disabled. This is only a UI hint — if Calendar isn't configured, or the `freeBusy` call fails, it fails open (shows everything as available) rather than blocking the form.
+
+The real guard is in `app/api/book/route.ts`: right before creating the event, it re-checks `freeBusy` for the exact requested slot and returns `409` ("that slot was just taken") instead of creating a duplicate if two people try to book the same time at once.
+
+Note the `freeBusy` endpoint needs **two scopes**, not one — `calendar.events` alone gets a 403 on `freeBusy.query` specifically. `app/lib/google-calendar.ts` requests both `calendar.events` and `calendar.readonly`.
+
+### No attendee invites
+
+Bookings don't add the customer as a Calendar attendee (no invite email). A bare service account without **Domain-Wide Delegation** (a Google Workspace-only feature) is rejected by Google when trying to invite attendees — not available for a personal Gmail-based calendar like this one. Instead, the booking confirmation includes a client-side-built "+ Add to Google Calendar" link (`calendar.google.com/calendar/render`) so the customer can add it to their own calendar themselves.
+
 ### One-time Google Calendar setup
 
 1. In [Google Cloud Console](https://console.cloud.google.com/), create a project (or reuse one) and enable the **Google Calendar API**.

@@ -117,4 +117,23 @@ export const HOURS = [
   { day: "Sunday", time: "08:00 – 18:00" },
 ];
 
+// Per-day booking hours, matching HOURS above exactly (weekdays run until
+// 20:00, weekends until 18:00) — used by /api/availability to generate the
+// right slot range for whichever date is requested.
+export const BOOKING_HOURS_BY_DAY: Record<string, { start: string; end: string }> = {
+  Monday: { start: "08:00", end: "20:00" },
+  Tuesday: { start: "08:00", end: "20:00" },
+  Wednesday: { start: "08:00", end: "20:00" },
+  Thursday: { start: "08:00", end: "20:00" },
+  Friday: { start: "08:00", end: "20:00" },
+  Saturday: { start: "08:00", end: "18:00" },
+  Sunday: { start: "08:00", end: "18:00" },
+};
+export const BOOKING_SLOT_MINUTES = 30;
+// Single global default — same as the previous hardcoded 60-min behavior in
+// app/api/book/route.ts, not a regression. Real services vary (the massage
+// entries above note "60 min" explicitly; waxing items are likely shorter)
+// — per-service durations would be a reasonable follow-up.
+export const BOOKING_DURATION_MINUTES = 60;
+
 export const REVIEWS: { quote: string; name: string }[] = [];

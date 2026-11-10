@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { JWT } from "google-auth-library";
-
-const CALENDAR_SCOPES = ["https://www.googleapis.com/auth/calendar.events"];
+import {
+  getCalendarEnv,
+  getCalendarAccessToken,
+  getBusyRanges,
+  rangesOverlap,
+} from "../../lib/google-calendar";
+import { BOOKING_DURATION_MINUTES } from "../../content";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -22,11 +26,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please fill in all required fields." }, { status: 400 });
   }
 
-  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  const calendarId = process.env.GOOGLE_CALENDAR_ID;
-
-  if (!clientEmail || !privateKey || !calendarId) {
+  const env = getCalendarEnv();
+  if (!env) {
     console.error("Booking received but Google Calendar isn't configured:", {
       name,
       contact,
@@ -45,14 +46,29 @@ export async function POST(req: NextRequest) {
   if (Number.isNaN(start.getTime())) {
     return NextResponse.json({ error: "Invalid date or time." }, { status: 400 });
   }
-  const end = new Date(start.getTime() + 60 * 60 * 1000); // default 1hr slot — service durations aren't set yet
+  const end = new Date(start.getTime() + BOOKING_DURATION_MINUTES * 60 * 1000);
 
   try {
-    const jwtClient = new JWT({ email: clientEmail, key: privateKey, scopes: CALENDAR_SCOPES });
-    const { token } = await jwtClient.getAccessToken();
+    const token = await getCalendarAccessToken(env);
 
+    // Conflict check right before creating the event — the UI's slot picker
+    // is just a hint, this is the real guard against double-booking.
+    const busy = await getBusyRanges(env, token, start.toISOString(), end.toISOString());
+    const conflict = busy.some((b) => rangesOverlap(start, end, new Date(b.start), new Date(b.end)));
+    if (conflict) {
+      return NextResponse.json(
+        { error: "That slot was just taken — please pick another." },
+        { status: 409 }
+      );
+    }
+
+    // No attendees/sendUpdates here: a bare service account without
+    // Domain-Wide Delegation (Workspace-only) gets rejected by Google when
+    // inviting attendees — confirmed live against a real calendar. The
+    // "+ Add to Google Calendar" link on the success message covers this
+    // for the customer instead.
     const res = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(env.calendarId)}/events`,
       {
         method: "POST",
         headers: {
