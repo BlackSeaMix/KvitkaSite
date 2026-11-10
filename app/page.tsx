@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Phone, MapPin, Clock, Menu, X, Star, Sparkles } from "lucide-react";
 import {
   SHOP_NAME,
@@ -12,10 +12,31 @@ import {
   ADDRESS,
   SERVICE_CATEGORIES,
   BOOKING_DEPOSIT_NOTE,
+  BOOKING_DURATION_MINUTES,
   GALLERY_ITEMS,
   HOURS,
   REVIEWS,
 } from "./content";
+
+type Slot = { time: string; available: boolean };
+type LastBooking = { service: string; date: string; time: string };
+
+function toGoogleCalendarUTC(d: Date): string {
+  return d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+}
+
+function buildGoogleCalendarLink(service: string, date: string, time: string): string {
+  const start = new Date(`${date}T${time}:00`);
+  const end = new Date(start.getTime() + BOOKING_DURATION_MINUTES * 60 * 1000);
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `${SHOP_NAME} — ${service}`,
+    dates: `${toGoogleCalendarUTC(start)}/${toGoogleCalendarUTC(end)}`,
+    details: `Appointment at ${SHOP_NAME}.`,
+    location: ADDRESS,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
 
 const NAV_LINKS = [
   { href: "#services", label: "Services" },
@@ -31,11 +52,42 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingStatus, setBookingStatus] = useState<BookingStatus>("idle");
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [lastBooking, setLastBooking] = useState<LastBooking | null>(null);
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  useEffect(() => {
+    if (!bookingDate) {
+      setSlots([]);
+      return;
+    }
+    let cancelled = false;
+    setSlotsLoading(true);
+    fetch(`/api/availability?date=${bookingDate}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setSlots(data.slots ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setSlots([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSlotsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [bookingDate]);
 
   async function handleBookingSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const service = data.get("service") as string;
 
     setBookingStatus("submitting");
     setBookingError(null);
@@ -47,9 +99,9 @@ export default function Home() {
         body: JSON.stringify({
           name: data.get("name"),
           contact: data.get("contact"),
-          service: data.get("service"),
-          date: data.get("date"),
-          time: data.get("time"),
+          service,
+          date: bookingDate,
+          time: bookingTime,
           notes: data.get("notes"),
         }),
       });
@@ -59,8 +111,12 @@ export default function Home() {
         throw new Error(body.error ?? "Something went wrong. Please call us instead.");
       }
 
+      setLastBooking({ service, date: bookingDate, time: bookingTime });
       setBookingStatus("success");
       form.reset();
+      setBookingDate("");
+      setBookingTime("");
+      setSlots([]);
     } catch (err) {
       setBookingStatus("error");
       setBookingError(err instanceof Error ? err.message : "Something went wrong.");
@@ -284,16 +340,32 @@ export default function Home() {
           </select>
           <input
             type="date"
-            name="date"
             required
+            min={todayStr}
+            value={bookingDate}
+            onChange={(e) => {
+              setBookingDate(e.target.value);
+              setBookingTime("");
+            }}
             className="bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
-          <input
-            type="time"
-            name="time"
+          <select
             required
-            className="bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
-          />
+            value={bookingTime}
+            onChange={(e) => setBookingTime(e.target.value)}
+            disabled={!bookingDate || slotsLoading}
+            className="bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary disabled:bg-zinc-100 disabled:text-zinc-400 disabled:cursor-not-allowed"
+          >
+            <option value="" disabled>
+              {!bookingDate ? "Pick a date first" : slotsLoading ? "Loading times…" : "Select a time"}
+            </option>
+            {slots.map((slot) => (
+              <option key={slot.time} value={slot.time} disabled={!slot.available}>
+                {slot.time}
+                {!slot.available ? " (Booked)" : ""}
+              </option>
+            ))}
+          </select>
           <textarea
             name="notes"
             placeholder="Anything else we should know? (optional)"
@@ -309,9 +381,17 @@ export default function Home() {
             {bookingStatus === "submitting" ? "Sending…" : "Request Booking"}
           </button>
 
-          {bookingStatus === "success" && (
+          {bookingStatus === "success" && lastBooking && (
             <p className="sm:col-span-2 text-sm text-emerald-600">
-              Thanks! We&apos;ve received your request and will confirm shortly.
+              Thanks! We&apos;ve received your request and will confirm shortly.{" "}
+              <a
+                href={buildGoogleCalendarLink(lastBooking.service, lastBooking.date, lastBooking.time)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-medium"
+              >
+                + Add to Google Calendar
+              </a>
             </p>
           )}
           {bookingStatus === "error" && (
