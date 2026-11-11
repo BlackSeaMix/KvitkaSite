@@ -33,6 +33,31 @@ Note the `freeBusy` endpoint needs **two scopes**, not one — `calendar.events`
 
 Bookings don't add the customer as a Calendar attendee (no invite email). A bare service account without **Domain-Wide Delegation** (a Google Workspace-only feature) is rejected by Google when trying to invite attendees — not available for a personal Gmail-based calendar like this one. Instead, the booking confirmation includes a client-side-built "+ Add to Google Calendar" link (`calendar.google.com/calendar/render`) so the customer can add it to their own calendar themselves.
 
+### Spam protection (reCAPTCHA)
+
+The booking form is a public, unauthenticated endpoint — without any
+protection, a script could submit it repeatedly and fill the calendar with
+junk bookings. Google reCAPTCHA v2 (the "I'm not a robot" checkbox) guards
+against that. Copy `.env.example` to `.env.local` and fill in:
+
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` — public, used client-side to render the
+  checkbox widget
+- `RECAPTCHA_SECRET_KEY` — server-only, used to verify the token before a
+  booking is created
+
+Without these set, the form works exactly as before with no captcha —
+spam protection is off, not broken.
+
+#### One-time reCAPTCHA setup
+
+1. Go to [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
+   and register a new site.
+2. Choose **reCAPTCHA v2 → "I'm not a robot" Checkbox**.
+3. Add the domain(s) the site runs on. `localhost` doesn't need to be
+   added — Google allow-lists it automatically for any v2 key.
+4. Copy the **Site Key** into `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` and the
+   **Secret Key** into `RECAPTCHA_SECRET_KEY`.
+
 ### One-time Google Calendar setup
 
 1. In [Google Cloud Console](https://console.cloud.google.com/), create a project (or reuse one) and enable the **Google Calendar API**.
