@@ -26,6 +26,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please fill in all required fields." }, { status: 400 });
   }
 
+  // Spam protection — no-op unless RECAPTCHA_SECRET_KEY is configured.
+  const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+  if (recaptchaSecret) {
+    const captchaToken = typeof body.captchaToken === "string" ? body.captchaToken : "";
+    if (!captchaToken) {
+      return NextResponse.json({ error: "Please complete the captcha." }, { status: 400 });
+    }
+    const verifyRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret: recaptchaSecret, response: captchaToken }),
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.success) {
+      return NextResponse.json({ error: "Captcha verification failed. Please try again." }, { status: 400 });
+    }
+  }
+
   const env = getCalendarEnv();
   if (!env) {
     console.error("Booking received but Google Calendar isn't configured:", {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Script from "next/script";
 import { Phone, MapPin, Clock, Menu, X, Star, Sparkles } from "lucide-react";
 import {
   SHOP_NAME,
@@ -48,6 +49,19 @@ const NAV_LINKS = [
 
 type BookingStatus = "idle" | "submitting" | "success" | "error";
 
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render: (container: string, opts: { sitekey: string }) => number;
+      getResponse: (widgetId?: number) => string;
+      reset: (widgetId?: number) => void;
+    };
+    onRecaptchaLoad?: () => void;
+  }
+}
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingStatus, setBookingStatus] = useState<BookingStatus>("idle");
@@ -57,8 +71,19 @@ export default function Home() {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [lastBooking, setLastBooking] = useState<LastBooking | null>(null);
+  const recaptchaWidgetId = useRef<number | null>(null);
 
   const todayStr = new Date().toISOString().slice(0, 10);
+
+  if (typeof window !== "undefined" && RECAPTCHA_SITE_KEY) {
+    window.onRecaptchaLoad = () => {
+      if (window.grecaptcha && recaptchaWidgetId.current === null) {
+        recaptchaWidgetId.current = window.grecaptcha.render("recaptcha-container", {
+          sitekey: RECAPTCHA_SITE_KEY,
+        });
+      }
+    };
+  }
 
   useEffect(() => {
     if (!bookingDate) {
@@ -89,6 +114,16 @@ export default function Home() {
     const data = new FormData(form);
     const service = data.get("service") as string;
 
+    let captchaToken = "";
+    if (RECAPTCHA_SITE_KEY) {
+      captchaToken = window.grecaptcha?.getResponse(recaptchaWidgetId.current ?? undefined) ?? "";
+      if (!captchaToken) {
+        setBookingStatus("error");
+        setBookingError("Please confirm you're not a robot.");
+        return;
+      }
+    }
+
     setBookingStatus("submitting");
     setBookingError(null);
 
@@ -103,6 +138,7 @@ export default function Home() {
           date: bookingDate,
           time: bookingTime,
           notes: data.get("notes"),
+          captchaToken,
         }),
       });
 
@@ -120,11 +156,22 @@ export default function Home() {
     } catch (err) {
       setBookingStatus("error");
       setBookingError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      if (RECAPTCHA_SITE_KEY) {
+        window.grecaptcha?.reset(recaptchaWidgetId.current ?? undefined);
+      }
     }
   }
 
   return (
     <div className="min-h-screen bg-ink text-cream">
+      {RECAPTCHA_SITE_KEY && (
+        <Script
+          src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit"
+          strategy="afterInteractive"
+        />
+      )}
+
       {/* Nav */}
       <header className="sticky top-0 z-50 bg-ink/90 backdrop-blur border-b border-cream/10">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -372,6 +419,10 @@ export default function Home() {
             rows={3}
             className="sm:col-span-2 bg-white text-ink placeholder:text-zinc-400 border border-zinc-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
           />
+
+          {RECAPTCHA_SITE_KEY && (
+            <div id="recaptcha-container" className="sm:col-span-2 flex justify-center" />
+          )}
 
           <button
             type="submit"
